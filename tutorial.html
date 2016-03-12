@@ -17,8 +17,6 @@
 <link href="css/responsive.css" rel="stylesheet" type="text/css">
 <link href="css/animate.css" rel="stylesheet" type="text/css">
 
-<!--[if IE]><style type="text/css">.pie {behavior:url(PIE.htc);}</style><![endif]-->
-
 <script type="text/javascript" src="js/jquery.1.8.3.min.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>
 <script type="text/javascript" src="js/jquery-scrolltofixed.js"></script>
@@ -26,14 +24,6 @@
 <script type="text/javascript" src="js/jquery.isotope.js"></script>
 <script type="text/javascript" src="js/wow.js"></script>
 <script type="text/javascript" src="js/classie.js"></script>
-
-
-<!--[if lt IE 9]>
-    <script src="js/respond-1.1.0.min.js"></script>
-    <script src="js/html5shiv.js"></script>
-    <script src="js/html5element.js"></script>
-<![endif]-->
-
 
 </head>
 <body>
@@ -47,31 +37,74 @@
         <ul class="we-create animated fadeInUp delay-1s">
         	<li>This tutorial is for the purpose of learning how to store images through MySQL and the Slim Framework.</li>
         <u2 class="we-create animated fadeInUp delay-3s">
-            <p>Template taken from <a href = "http://www.free-css.com/free-css-templates/page195/knight#shout">http://www.free-css.com/free-css-templates/page195/knight#shout</p>
+            <p>Template taken from <a href = "http://www.free-css.com/free-css-templates/page195/knight#shout">http://www.free-css.com/free-css-templates/page195/knight#shout</a></p>
     </div>
 </div>
-</header><!--header-end-->
+</header>
 
-
-<nav class="main-nav-outer" id="test"><!--main-nav-start-->
+<!--
+<nav class="main-nav-outer" id="test">
 	<div class="container">
         <ul class="main-nav">
             <li class="small-logo"><a href="#header"><img src="home.png" alt=""></a></li>
         </ul>
         <a class="res-nav_click" href="#"><i class="fa-bars"></i></a>
     </div>
-</nav><!--main-nav-end-->
+</nav>
+-->
 
-
-
-<section class="main-section" id="service"><!--main-section-start-->
+<section class="main-section">
 	<div class="container">
     	<h2>Beginning Steps</h2>
     	<h6>Before beginning with the tutorial, there are some introductory steps that are necessary.</h6>
 
-        <h3>Step 1</h3>
-        <p>To begin, make surethat you have the Slim framework installed. If you do not, installation instructions can be found <a href = "https://docs.google.com/document/d/1Kzj-4EB9SQT7W2PQMt2yRAASGuWrd9QyXsErSplrAWs/edit#">here</p>
+        <h3>Installing the Slim Framework</h3>
+        <p>To begin, make surethat you have the Slim framework installed. If you do not, installation instructions can be found <a href = "https://docs.google.com/document/d/1Kzj-4EB9SQT7W2PQMt2yRAASGuWrd9QyXsErSplrAWs/edit#">here</a>. Return to this page when this step is completed.</p> 
+        <br></br>
+        <h3>Important information to keep in mind</h3>
+        <p>By this point you should have the Slim Framework installed. Before we continue, there are a couple things that are good practices to keep in mind moving forward.<br></br> First, when accessing a database, you should never sign in using the root user. We will go through steps to create a limited user that only has access to the database we create.<br></br> Second, there are many ways to actually store images using MySQL and the Slim Framework but one way that should always be avoided is storing the actual image in a database through Binary Large Objects (BLOBs). This is considered bad practice and should be avoided. You are consuming connections to the database, that are going to remain open longer, that could otherwise go to something that should be in the database. Also, another problem with storing BLOBs in a database is the increase in size it is going to add to your backups. Should you have to do a restore, it is going to take a lot longer to load up that giant sql backup you've taken because it has been inflated with blob data. These are some of the many reasons why storing images as BLOBs is considered bad practice. If you would like to know more, there are many responses to this question online. In this tutorial, we will be storing URLs in a database and then accessing that URL through PHP to display that image to the browser. The test URL we will be using is displayed below.</p> 
+        <figure class="fadeInUp delay-02s">
+                <img src="test_image.jpg" alt="">
+        </figure>
+        <a href = "http://images5.fanpop.com/image/photos/26300000/beautiful-emma-emma-watson-26334822-1131-707.jpg">http://images5.fanpop.com/image/photos/26300000/beautiful-emma-emma-watson-26334822-1131-707.jpg</a>
+    </div>
+</section>
 
+<section class="main-section alabaster">
+    <div class="container">
+        <h2>Moving On</h2>
+        <h6>Now that we have all of the resources necessary, let's move on to the main part of the tutorial.</h6>
+
+        <h3>Creating your user and database</h3>
+        <p>Let's first create a simple SQL script named testScript.sql that will hold our image URL.</p><br>
+        <p style="font-family:courier; color:blue; padding-left:3em;">
+            CREATE database MMTest;<br>
+            USE MMTest; <br></br>
+            CREATE table imageURLs(<br>
+            id varchar(4) primary key,<br>
+            url varchar(2000));<br></br>
+            INSERT into imageURLs values('1', 'http://images5.fanpop.com/image/photos/26300000/beautiful-emma-emma-watson-26334822-1131-707.jpg');<br></br>
+        </p>
+        <p>
+        Here we have created a database called MMTest in which we have placed a table that is called imageURLs. Table imageURLs contains a primary key to give each URL a numerical ID, and the actual URL that the image originates from. It is possible to also add more attributes within the the table to further distinguish and describe different images. We can now run this script in MySQL with (you can use the root user for this command):<br></br>
+        <p style="font-family:courier; color:blue; padding-left:3em;">
+            mysql -u root -p &lt;password&gt; &lt; testScript.sql;
+        </p><br>
+        Now that you have run your script, log into MySQL using this command:<br></br>
+        <p style="font-family:courier; color:blue; padding-left:3em;">
+            mysql -u root -p &lt;password&gt;;
+        </p><br>
+        We will now create a guest user that does not have access to everything. In MySQL  type the following commands:<br></br
+        <p style="font-family:courier; color:blue; padding-left:3em;">
+            CREATE USER '&lt;user&gt;'@'localhost' IDENTIFIED BY &lt;password&gt;;<br>
+        </p><br>
+        This will create a MySQL user named &lt;user&gt; with &lt;password&gt; as their password. Users in MySQL allow for you to regulate who has access to what parts of your database. In production, you should store at the very least a hash of the password in the database, but for simplicity’s sake we will present a basic solution for you to build on.<br></br>
+        <p style="font-family:courier; color:blue; padding-left:3em;">
+            GRANT SELECT ON user_auth.* TO &lt;user&gt;;<br>
+        </p><br>
+        This will grant only the permissions to view the database to the basic users. This is not required, but a good thing to know how to do and be comfortable with. In real practice, a basic user shouldn’t be able to view the users and their passwords, but, for these purposes, they can. You can set up your own permissions as they pertain to your project.<br>
+        Congratulations!  You now have a image (or rather a path to an image) stored in your database.  This method is similar to accessing web servers however, some online file systems like Amazon Web Servers S3 (AWS S3), require a private key to access the images you upload. This requires a little more research to understand how private keys and public keys work, and how to actually implement them to access your file system online. This tutorial will not address this topic.
+        </p>
 
 <!--
         <div class="row">
